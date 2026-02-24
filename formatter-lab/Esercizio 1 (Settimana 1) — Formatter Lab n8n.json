@@ -1,0 +1,448 @@
+{
+  "name": "Esercizio 1 (Settimana 1) — Formatter Lab (n8n Cloud)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -272
+      ],
+      "id": "b10b5d0d-f56f-4b03-a92d-ac3d995c5d19",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab37a6df-62cd-4410-833e-9898d818dc6e",
+              "name": "email",
+              "value": "MARIO@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "9e7fe9f3-345e-4b85-8106-7b04bca37974",
+              "name": "fullName",
+              "value": "Mario rossi",
+              "type": "string"
+            },
+            {
+              "id": "d6a67770-d6a4-4b3a-a04b-18f2fd0e5ec3",
+              "name": "phone",
+              "value": "+39 (333) 12-34-567",
+              "type": "string"
+            },
+            {
+              "id": "3d93f510-1311-49d2-a51e-829ad452f8e7",
+              "name": "companyName",
+              "value": "ACME srl",
+              "type": "string"
+            },
+            {
+              "id": "8629bc4b-adf2-4fa8-8fa0-2d2c015c084e",
+              "name": "source",
+              "value": "facebook_ads",
+              "type": "string"
+            },
+            {
+              "id": "5440b594-4361-40bf-adcc-13fbe9356eb9",
+              "name": "=createdAt",
+              "value": "={{$now}}",
+              "type": "string"
+            },
+            {
+              "id": "3c7a5a63-3745-45b6-aae6-b158c65ea5fc",
+              "name": "eventId",
+              "value": "event_067",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        -272
+      ],
+      "id": "b902e2e7-21dc-4994-9931-d0dd500514c1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9cc5db52-01fd-46e7-9be4-12142c963069",
+              "name": "status",
+              "value": "accepted",
+              "type": "string"
+            },
+            {
+              "id": "f814b4d3-ac8c-4699-8ff4-985b0d41c42e",
+              "name": "lead",
+              "value": "={{ $('if validation ok?').item.json.lead }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        -160
+      ],
+      "id": "5e914a61-6609-4885-8506-f7be4eb738e2",
+      "name": "ok output"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c38eabb-3731-4fc6-b5b9-dd15c64f9aba",
+              "name": "status ",
+              "value": "rejected",
+              "type": "string"
+            },
+            {
+              "id": "b06ed53b-eb6d-4962-8125-30ab21731cc1",
+              "name": "=errors",
+              "value": "={{ $('Code in JavaScript').item.json.errors }}",
+              "type": "array"
+            },
+            {
+              "id": "8c7aa692-25f7-4cf9-846e-1559995ce62d",
+              "name": "=lead",
+              "value": "={{ $('Code in JavaScript').item.json.lead }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        -384
+      ],
+      "id": "0b0f25f1-f71e-49f3-9082-36c5e4bc72d7",
+      "name": "ERR - output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a72f843d-df70-44d2-b64e-32b84f9f0110",
+              "leftValue": "={{$json.meta.ok}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -192,
+        -272
+      ],
+      "id": "50324aa0-f0ea-48b1-b454-2ccc821b4c7d",
+      "name": "if validation ok?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatter Lab - v1\n// Output: { lead: {...}, errors: [...], meta: {...} }\n\nfunction cleanString(v) {\n  if (typeof v !== \"string\") return null;\n  const s = v.trim().replace(/\\s+/g, \" \");\n  return s.length ? s : null;\n}\n\nfunction toLowerSafe(v) {\n  const s = cleanString(v);\n  return s ? s.toLowerCase() : null;\n}\n\nfunction normalizeEmail(v) {\n  const e = toLowerSafe(v);\n  if (!e) return null;\n  if (!e.includes(\"@\") || e.startsWith(\"@\") || e.endsWith(\"@\")) return null;\n  return e;\n}\n\nfunction normalizePhone(v) {\n  const s = cleanString(v);\n  if (!s) return null;\n  const p = s.replace(/[^0-9+]/g, \"\");\n  return p.length >= 8 ? p : null;\n}\n\nfunction required(value, fieldName, errors) {\n  if (value === null || value === undefined || value === \"\") {\n    errors.push({ field: fieldName, message: \"Missing or invalid value\" });\n    return null;\n  }\n  return value;\n}\n\nconst input = $json;\n\n// alias anti-typo (accetta anche evenId se capita)\n\nif (input.eventId == null && input.evenId != null) input.eventId = input.evenId;\nconst errors = [];\n\nconst fullName = cleanString(input.fullName);\nconst email = normalizeEmail(input.email);\nconst phone = normalizePhone(input.phone);\nconst companyName = cleanString(input.companyName);\nconst source = toLowerSafe(input.source);\nconst createdAt = cleanString(input.createdAt);\nconst eventId = cleanString(input.eventId);\nif (!eventId) {\n  errors.push({\n    field: \"eventId\",\n    message: \"eventId missing (check Set node field name: eventId)\",\n  });\n}\n\n// Required fields\nrequired(fullName, \"fullName\", errors);\nrequired(email, \"email\", errors);\nrequired(eventId, \"eventId\", errors);\n\nconst lead = {\n  fullName,\n  email,\n  phone,\n  companyName,\n  source: source ?? \"unknown\",\n  createdAt: createdAt ?? new Date().toISOString(),\n  eventId,\n};\n\nreturn [\n  {\n    json: {\n      lead,\n      errors,\n      meta: {\n        ok: errors.length === 0,\n        receivedFields: Object.keys(input),\n      },\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -272
+      ],
+      "id": "a9c797d7-e394-41e1-9c21-79674f6960d2",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20",
+          "mode": "list",
+          "cachedResultName": "processed_events",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foglio1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "eventId": "={{ $('Code in JavaScript').item.json.lead.eventId }}",
+            "createdAt": "={{$now}}",
+            "email": "={{ $('Code in JavaScript').item.json.lead.email }}"
+          },
+          "matchingColumns": [
+            "eventId"
+          ],
+          "schema": [
+            {
+              "id": "eventId",
+              "displayName": "eventId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -160
+      ],
+      "id": "3105bf1e-c110-4328-b145-dcd4c5eca3cb",
+      "name": "Append or update row in sheet",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "78DXOMq3gmiXam1g",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20",
+          "mode": "list",
+          "cachedResultName": "processed_events",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foglio1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14DqxpvrkQhGqSFw9tJqa9UQgUiEDdC9E7O7a0ZsEK20/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "eventId",
+              "lookupValue": "={{ $('Code in JavaScript').item.json.lead.eventId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        -272
+      ],
+      "id": "0b1c7b6e-d8a9-4edc-985c-a702e7ccec4a",
+      "name": "lookup",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "78DXOMq3gmiXam1g",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "86d9b4c0-a677-4878-8555-30ffc4243d83",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        -432
+      ],
+      "id": "7bd42535-c07e-4021-a594-170b473b281d",
+      "name": "if duplicate?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if validation ok?": {
+      "main": [
+        [
+          {
+            "node": "lookup",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "if validation ok?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "ok output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lookup": {
+      "main": [
+        [
+          {
+            "node": "if duplicate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if duplicate?": {
+      "main": [
+        [
+          {
+            "node": "ERR - output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "c34e9bf4-7631-457d-a189-6ebcf24c0607",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c6340a675df2a727ab15ed3f6d8d62880dbe20df9d0152fe8457b488c5c92e1e"
+  },
+  "id": "HCGdQFUfuoB7KBa036tXp",
+  "tags": []
+}
