@@ -1,0 +1,96 @@
+{
+  "name": "Weather API Lab",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c71c24cc-4a77-4741-ba77-02cd5c82f654",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "lat",
+              "value": "41.9028"
+            },
+            {
+              "name": "lon",
+              "value": "12.4864"
+            },
+            {
+              "name": "appid",
+              "value": "2d82d5b5d09ee41855b865713189e305"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "52e8b422-0f1a-440d-934d-69bd71a374ba",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst kelvin = data.main.temp;\nconst temp = parseFloat((kelvin - 273.15).toFixed(2));\nconst city = data.name;\nconst description = data.weather[0].description;\n\nreturn [{\n  json: {\n    city,\n    temp,\n    description\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        0
+      ],
+      "id": "9a6af85f-312c-403d-ba5b-125abd1eff0f",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "ac97c7c0-8dcf-4ebc-8617-a2f033ef51f6",
+  "meta": {
+    "instanceId": "c6340a675df2a727ab15ed3f6d8d62880dbe20df9d0152fe8457b488c5c92e1e"
+  },
+  "id": "kqkxsuGw-2F-mtvRizbrd",
+  "tags": []
+}
