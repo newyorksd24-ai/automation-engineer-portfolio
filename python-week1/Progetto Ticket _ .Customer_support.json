@@ -1,0 +1,114 @@
+{
+  "name": "Progetto Ticket : Customer_support",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "186f51af-49eb-47a8-a624-1dae67739383",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "nome = _items[0][\"json\"].get(\"nome\") or \"\"\nemail = _items[0][\"json\"].get(\"email\") or \"\"\noggetto = _items[0][\"json\"].get(\"oggetto\") or \"\"\nscore = _items[0][\"json\"].get(\"score\") or 0\nnote = _items[0][\"json\"].get(\"note\") or \"\"\n\ndef pulisci_nome(nome):\n    return nome.strip().lower()\n\ndef pulisci_email(email):\n    return email.split(\"@\")[1].lower()\n\ndef pulisci_numero(numero):\n    return round(numero, 2)\n\ndef maiuscola_iniziale(testo):\n    return testo.capitalize()\n\ndef rimuovi_spazi(testo):\n    return testo.replace(\" \", \"\")\n\ndef conta_caratteri(testo):\n    return len(testo)\n\ndef testo_vuoto(testo):\n    return len(testo) == 0\n\ndef unisci_nome(nome, cognome):\n    return f\"{nome} {cognome}\"\n\ndef estrai_prefisso_email(email):\n    return email.split(\"@\")[0].lower()\n\ndef formatta_percentuale(numero):\n    return f\"{int(numero * 100)}%\"\n\nreturn [{\"json\": {\n    \"nome_pulito\":        pulisci_nome(nome),\n    \"dominio\":            pulisci_email(email),\n    \"score_pulito\":       pulisci_numero(score),\n    \"oggetto_pulito\":     maiuscola_iniziale(oggetto),\n    \"caratteri_oggetto\":  conta_caratteri(oggetto),\n    \"note_vuote\":         testo_vuoto(note),\n    \"username\":           estrai_prefisso_email(email),\n    \"percentuale\":        formatta_percentuale(score)\n}}]\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "dc9a1c7c-7490-4f93-b79b-e491120a81e1",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1610405-d267-498e-a000-3376028aca96",
+              "name": "nome",
+              "value": "mario rossi ",
+              "type": "string"
+            },
+            {
+              "id": "2e4f6f30-00f3-4606-b098-e64b018d6a3a",
+              "name": "email",
+              "value": "Mario.Rossi@Gmail.Com",
+              "type": "string"
+            },
+            {
+              "id": "9a1b73a6-b408-4afa-b314-1612803dc69d",
+              "name": "oggetto",
+              "value": "PROBLEMA CON IL LOGIN",
+              "type": "string"
+            },
+            {
+              "id": "28c655a8-bc31-470c-bd57-a2aa05af3fe1",
+              "name": "score",
+              "value": 0.92,
+              "type": "number"
+            },
+            {
+              "id": "1576065a-9644-4297-ab48-c256fc828251",
+              "name": "note",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6f00e493-cee7-4a8a-98c8-dd0977916bc9",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c4ff07d4-22ed-427b-b25c-ce5d19e9f70a",
+  "meta": {
+    "instanceId": "c6340a675df2a727ab15ed3f6d8d62880dbe20df9d0152fe8457b488c5c92e1e"
+  },
+  "id": "XVxZwxcor5LGcv5Z",
+  "tags": []
+}

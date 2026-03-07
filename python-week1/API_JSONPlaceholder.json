@@ -1,0 +1,81 @@
+{
+  "name": "API_JSONPlaceholder",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "992b6acd-1974-4e22-8d1c-a2f2b2e49b47",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/users",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0a4f2166-36f2-449b-83a2-df39f1dbfaf0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "def pulisci_nome(nome):\n  return nome.strip().lower()\n  \ndef pulisci_email(email):\n  return email.split(\"@\")[1].lower()\n\nrisultato = [\n  {\n      \"nome_pulito\": pulisci_nome(item[\"json\"][\"name\"]),\n      \"dominio_email\": pulisci_email(item[\"json\"][\"email\"])\n\n\n  }\n  for item in _items\n\n]\n\nreturn [{\"json\": r} for r in risultato]    \n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6d1c27a9-b00f-46c4-a1ba-760a308dead1",
+      "name": "Code in Python"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "26815297-8239-4421-8596-77d414779732",
+  "meta": {
+    "instanceId": "c6340a675df2a727ab15ed3f6d8d62880dbe20df9d0152fe8457b488c5c92e1e"
+  },
+  "id": "EfYpGCD9qDUWXlgE",
+  "tags": []
+}
